@@ -65,7 +65,7 @@ public class WebBundleTransformerTests {
         
         verify(manifestTransformer);
         
-        assertManifestTransformations(bundleManifest, "web-bundle");
+        assertManifestTransformations(bundleManifest, "bar");
     }
     
     @Test
@@ -117,29 +117,10 @@ public class WebBundleTransformerTests {
         
         verify(manifestTransformer);
         
-        assertManifestTransformations(bundleManifest, "web-bundle");
-    }
-    
-    @Test
-    public void ignoreWebBundlesWithExistingModuleType() throws DeploymentException {
-        BundleManifest bundleManifest = new StandardBundleManifest(null);
-        bundleManifest.getBundleSymbolicName().setSymbolicName("foo.war");
-        bundleManifest.setModuleType("web-slice");
-        
-        URI sourceUri = URI.create("file:/bar");
-        BundleInstallArtifact installArtifact = TestUtils.createBundleInstallArtifact(sourceUri, new File("location"), bundleManifest);
-        
-        replay(manifestTransformer);
-        
-        Tree<InstallArtifact> installTree = new ThreadSafeArrayListTree<InstallArtifact>(installArtifact);
-        webBundleTransformer.transform(installTree, null);
-        
-        verify(manifestTransformer);
-        
-        assertManifestTransformations(bundleManifest, "web-slice");
+        assertManifestTransformations(bundleManifest, "/foo");
     }
     
     public void assertManifestTransformations(BundleManifest bundleManifest, String expectedModuleType) {
-        assertEquals(expectedModuleType, bundleManifest.getHeader("Module-Type"));
+        assertEquals(expectedModuleType, bundleManifest.getHeader("Web-ContextPath"));
     }
 }

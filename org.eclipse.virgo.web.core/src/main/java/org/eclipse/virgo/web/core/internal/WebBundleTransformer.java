@@ -44,10 +44,6 @@ final class WebBundleTransformer implements Transformer {
 
     private final WebDeploymentEnvironment environment;
 
-    static final String WEB_BUNDLE_MODULE_TYPE = "web-bundle";
-
-    static final String MANIFEST_HEADER_MODULE_TYPE = "Module-Type";
-
     private static final String WAR_EXTENSION = ".war";
 
     private static final String MANIFEST_HEADER_WEB_CONTEXT_PATH = "Web-ContextPath";
@@ -165,19 +161,16 @@ final class WebBundleTransformer implements Transformer {
         try {
             BundleManifest bundleManifest = bundleArtifact.getBundleManifest();
             if (bundleManifest.getModuleType() == null || "web".equalsIgnoreCase(bundleManifest.getModuleType())) {
-            	bundleManifest.setHeader("SpringSource-DefaultWABHeaders", "true");
-                bundleManifest.setModuleType(WEB_BUNDLE_MODULE_TYPE);
                 boolean webBundle = /*WebContainerUtils.*/ isWebApplicationBundle(bundleManifest);
                 InstallationOptions installationOptions = new InstallationOptions(Collections.<String, String> emptyMap());
                 installationOptions.setDefaultWABHeaders(true);
                 this.environment.getManifestTransformer().transform(bundleManifest, getSourceUrl(bundleArtifact), installationOptions, webBundle);
             } else {
-                logger.debug("Bundle '{}' version '{}' is not being transformed as it already has a Module-Type of '{}'", new Object[] {
+                logger.debug("Bundle '{}' version '{}' is not being transformed as it already has a Web-ContextPath of '{}'", new Object[] {
                     bundleManifest.getBundleSymbolicName().getSymbolicName(), bundleManifest.getBundleVersion(), bundleManifest.getModuleType() });
             }
         } catch (IOException e) {
-            throw new DeploymentException("Failed to apply web container transformations to bundle '" + bundleArtifact.getName() + "' version '"
-                + bundleArtifact.getVersion() + "'", e);
+            throw new DeploymentException("Failed to apply web container transformations to bundle '" + bundleArtifact.getName() + "' version '" + bundleArtifact.getVersion() + "'", e);
         }
     }
 

@@ -161,7 +161,7 @@ final class WebBundleLifecycleListener extends InstallArtifactLifecycleListenerS
         if (installArtifact instanceof BundleInstallArtifact) {
             try {
                 BundleManifest bundleManifest = ((BundleInstallArtifact)installArtifact).getBundleManifest();
-                return (WebBundleTransformer.WEB_BUNDLE_MODULE_TYPE.equals(bundleManifest.getModuleType()));
+                return (WebBundleTransformer.isWebApplicationBundle(bundleManifest));
             } catch (IOException ioe) {
                 throw new DeploymentException("Failed to get bundle manifest from '" + installArtifact + "'", ioe);
             }

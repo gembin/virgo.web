@@ -60,8 +60,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * This class is not thread-safe.
  * 
  */
-public class ServerOsgiBundleXmlWebApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext,
-    ThemeSource {
+public class ServerOsgiBundleXmlWebApplicationContext extends OsgiBundleXmlApplicationContext implements ConfigurableWebApplicationContext, ThemeSource {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

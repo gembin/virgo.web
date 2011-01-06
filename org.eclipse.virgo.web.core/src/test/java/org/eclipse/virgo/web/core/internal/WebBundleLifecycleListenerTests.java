@@ -34,7 +34,6 @@ import org.eclipse.gemini.web.core.WebBundleManifestTransformer;
 import org.eclipse.virgo.util.osgi.manifest.BundleManifest;
 import org.eclipse.virgo.util.osgi.manifest.internal.StandardBundleManifest;
 import org.eclipse.virgo.web.core.internal.WebBundleLifecycleListener;
-import org.eclipse.virgo.web.core.internal.WebBundleTransformer;
 import org.eclipse.virgo.web.core.internal.WebDeploymentEnvironment;
 
 public class WebBundleLifecycleListenerTests {
@@ -68,7 +67,6 @@ public class WebBundleLifecycleListenerTests {
     @Test
     public void testEmptyContextPathReplacement() throws DeploymentException {
         BundleManifest bundleManifest = new StandardBundleManifest(null);
-        bundleManifest.setModuleType(WebBundleTransformer.WEB_BUNDLE_MODULE_TYPE);
         bundleManifest.setBundleVersion(new Version(1, 0, 0));
         bundleManifest.getBundleSymbolicName().setSymbolicName("foobar");
         
@@ -123,7 +121,6 @@ public class WebBundleLifecycleListenerTests {
     @Test
     public void standardLifecycle() throws DeploymentException {
         BundleManifest bundleManifest = new StandardBundleManifest(null);
-        bundleManifest.setModuleType(WebBundleTransformer.WEB_BUNDLE_MODULE_TYPE);
         bundleManifest.setBundleVersion(new Version(1, 0, 0));
         bundleManifest.getBundleSymbolicName().setSymbolicName("foo");
         
