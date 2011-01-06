@@ -9,6 +9,11 @@
 	<reference id="transformer" interface="org.eclipse.gemini.web.core.WebBundleManifestTransformer"/>	
 	<reference id="framework" interface="org.eclipse.virgo.kernel.osgi.framework.OsgiFramework" />
 	<reference id="eventLogger" interface="org.eclipse.virgo.medic.eventlog.EventLogger"/>
+	<reference id="hashGenerator" interface="org.eclipse.virgo.repository.HashGenerator"/>
+	
+	<reference id="webStreamHandler" interface="org.osgi.service.url.URLStreamHandlerService" filter="(url.handler.protocol=webbundle)">
+	 
+	</reference>
 	
 	<service ref="registry" interface="org.eclipse.virgo.web.core.WebApplicationRegistry"/>
 	
@@ -18,17 +23,17 @@
 		</service-properties>
 	</service>
 	
+	<beans:bean id="registry" class="org.eclipse.virgo.web.core.internal.StandardWebApplicationRegistry"/>
+	
 	<beans:bean id="environment" class="org.eclipse.virgo.web.core.internal.WebDeploymentEnvironment">
 		<beans:constructor-arg ref="webContainer"/>
 		<beans:constructor-arg ref="transformer"/>
 		<beans:constructor-arg ref="registry"/>
 	</beans:bean>
-	
-	<beans:bean id="registry" class="org.eclipse.virgo.web.core.internal.StandardWebApplicationRegistry"/>
 
 	<beans:bean id="webAppEventLogger" class="org.eclipse.virgo.web.core.internal.WebApplicationEventLogger">
 		<beans:constructor-arg ref="eventLogger"/>
-	</beans:bean>
+	</beans:bean><!--
 	
 	<service interface="org.eclipse.virgo.kernel.install.pipeline.stage.transform.Transformer" ranking="10000">
 		<beans:bean class="org.eclipse.virgo.web.core.internal.WebBundleTransformer">
@@ -43,11 +48,9 @@
 		</beans:bean>
 	</service>
 	
-	<service interface="org.eclipse.virgo.kernel.install.artifact.ArtifactIdentityDeterminer">
+	--><service interface="org.eclipse.virgo.kernel.install.artifact.ArtifactIdentityDeterminer">
 		<beans:bean class="org.eclipse.virgo.web.core.internal.WebArtifactIdentityDeterminer">
-			<beans:constructor-arg>
-				<reference interface="org.eclipse.virgo.repository.HashGenerator"/>
-			</beans:constructor-arg>
+			<beans:constructor-arg ref="hashGenerator" />
 		</beans:bean>
 	</service>
 	

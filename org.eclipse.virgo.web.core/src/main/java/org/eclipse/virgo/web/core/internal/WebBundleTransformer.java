@@ -33,6 +33,8 @@ import org.eclipse.virgo.util.common.Tree.ExceptionThrowingTreeVisitor;
 import org.eclipse.virgo.util.osgi.manifest.BundleManifest;
 
 /**
+ * This is responsible for making all install artifacts, as determined by the {@code WebArtifactIdentityDeterminer}, in to valid WAB's. 
+ * 
  * <strong>Concurrent Semantics</strong><br />
  * 
  * Thread-safe.

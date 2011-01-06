@@ -37,6 +37,10 @@ import org.osgi.service.event.EventHandler;
 
 
 /**
+ * This lifecycle listener is responsible for starting and stopping web applications 
+ * within the web container be listening to application lifecycle events as it goes 
+ * through the Virgo deployer.
+ * 
  * <strong>Concurrent Semantics</strong><br />
  *
  * Thread-safe.
