@@ -11,10 +11,6 @@
 
 package org.eclipse.virgo.web.tomcat;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.reset;
-import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -29,39 +25,25 @@ import org.osgi.framework.Version;
 import org.eclipse.virgo.kernel.deployer.core.DeploymentException;
 import org.eclipse.virgo.kernel.install.artifact.BundleInstallArtifact;
 import org.eclipse.virgo.kernel.install.artifact.InstallArtifact;
-import org.eclipse.virgo.teststubs.osgi.framework.StubBundleContext;
-import org.eclipse.gemini.web.core.WebBundleManifestTransformer;
 import org.eclipse.virgo.util.osgi.manifest.BundleManifest;
 import org.eclipse.virgo.util.osgi.manifest.internal.StandardBundleManifest;
-import org.eclipse.virgo.web.core.internal.WebBundleLifecycleListener;
-import org.eclipse.virgo.web.core.internal.WebDeploymentEnvironment;
+import org.eclipse.virgo.web.tomcat.internal.StandardWebApplicationRegistry;
 
-public class WebBundleLifecycleListenerTests {
+public class StandardWebApplicationRegistryTests {
     
     private StubWebContainer webContainer = new StubWebContainer();
     
-    private StubWebApplicationRegistry webApplicationRegistry = new StubWebApplicationRegistry(); 
-    
-    private WebBundleManifestTransformer manifestTransformer = createMock(WebBundleManifestTransformer.class);
-    
-    private WebDeploymentEnvironment environment = new WebDeploymentEnvironment(webContainer, webApplicationRegistry, manifestTransformer);
-    
-    private StubBundleContext bundleContext = new StubBundleContext();
-    
-    private WebBundleLifecycleListener listener = new WebBundleLifecycleListener(environment, bundleContext);
+    private StandardWebApplicationRegistry listener = new StandardWebApplicationRegistry();
     
     @Test
     public void standardLifecycleForNonBundleInstallArtifact() throws DeploymentException {
         InstallArtifact installArtifact = TestUtils.createInstallArtifact("foo", new Version(1,0,0), new File("location"), URI.create("file:/bar"));
-        replay(this.manifestTransformer);
         
         this.listener.onStarting(installArtifact);
         this.listener.onStarted(installArtifact);
         this.listener.onStopping(installArtifact);
         
-        verify(this.manifestTransformer);
-        
-        this.webApplicationRegistry.assertStateUnchanged();
+        //this.listener.assertStateUnchanged();
     }
     
     @Test
@@ -72,50 +54,32 @@ public class WebBundleLifecycleListenerTests {
         
         BundleInstallArtifact installArtifact = TestUtils.createBundleInstallArtifact(URI.create("file:/testLocation"), new File("location"), bundleManifest);        
         
-        replay(this.manifestTransformer);
-        
         StubWebApplication webApplication = new StubWebApplication("");
         this.webContainer.addWebApplication(installArtifact.getBundle(), webApplication);
         
         this.listener.onStarting(installArtifact);
         
-        verify(this.manifestTransformer);        
-        reset(this.manifestTransformer);                 
-        replay(this.manifestTransformer);
-        
         this.listener.onStarted(installArtifact);
         
-        this.listener.webBundleDeployed(installArtifact.getBundle());
-        
-        assertEquals("foobar-1.0.0", this.webApplicationRegistry.getWebApplicationName("/"));
+        assertEquals("foobar-1.0.0", this.listener.getWebApplicationName("/"));
         assertTrue(webApplication.isStarted());
-        assertEquals("/", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));
-        
-        verify(this.manifestTransformer);        
-        reset(this.manifestTransformer);                 
-        replay(this.manifestTransformer);               
+        assertEquals("/", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));             
         
         this.listener.onStopping(installArtifact);
         
-        assertNull(this.webApplicationRegistry.getWebApplicationName("/"));
+        assertNull(this.listener.getWebApplicationName("/"));
         assertFalse(webApplication.isStarted());
-        
-        verify(this.manifestTransformer);   
     }
     
     @Test
     public void standardLifecycleForNonWebBundleBundleInstallArtifact() throws DeploymentException {
         InstallArtifact installArtifact = TestUtils.createBundleInstallArtifact(URI.create("file:/bar"), new File("location"), new StandardBundleManifest(null));
         
-        replay(this.manifestTransformer);
-        
         this.listener.onStarting(installArtifact);
         this.listener.onStarted(installArtifact);
         this.listener.onStopping(installArtifact);
         
-        verify(this.manifestTransformer);
-        
-        this.webApplicationRegistry.assertStateUnchanged();
+        //this.listener.assertStateUnchanged();
     }
     
     @Test
@@ -124,36 +88,23 @@ public class WebBundleLifecycleListenerTests {
         bundleManifest.setBundleVersion(new Version(1, 0, 0));
         bundleManifest.getBundleSymbolicName().setSymbolicName("foo");
         
-        BundleInstallArtifact installArtifact = TestUtils.createBundleInstallArtifact(URI.create("file:/bar"), new File("location"), bundleManifest);        
-        
-        replay(this.manifestTransformer);
+        BundleInstallArtifact installArtifact = TestUtils.createBundleInstallArtifact(URI.create("file:/bar"), new File("location"), bundleManifest);
         
         StubWebApplication webApplication = new StubWebApplication("/bar");
         this.webContainer.addWebApplication(installArtifact.getBundle(), webApplication);
         
         this.listener.onStarting(installArtifact);
         
-        verify(this.manifestTransformer);        
-        reset(this.manifestTransformer);                 
-        replay(this.manifestTransformer);
-        
         this.listener.onStarted(installArtifact);
-        this.listener.webBundleDeployed(installArtifact.getBundle());
         
-        assertEquals("foo-1.0.0", this.webApplicationRegistry.getWebApplicationName("/bar"));
+        assertEquals("foo-1.0.0", this.listener.getWebApplicationName("/bar"));
         assertTrue(webApplication.isStarted());
-        assertEquals("/bar", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));
-        
-        verify(this.manifestTransformer);        
-        reset(this.manifestTransformer);                 
-        replay(this.manifestTransformer);               
+        assertEquals("/bar", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));           
         
         this.listener.onStopping(installArtifact);
         
-        assertNull(this.webApplicationRegistry.getWebApplicationName("/bar"));
-        assertFalse(webApplication.isStarted());
-        
-        verify(this.manifestTransformer);                
+        assertNull(this.listener.getWebApplicationName("/bar"));
+        assertFalse(webApplication.isStarted());              
     }
     
     

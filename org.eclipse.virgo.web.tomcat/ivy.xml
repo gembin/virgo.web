@@ -20,14 +20,19 @@
 		<dependency org="org.junit" name="com.springsource.org.junit" rev="${org.junit}" conf="test->runtime"/>
 		<dependency org="org.easymock" name="com.springsource.org.easymock" rev="${org.easymock}" conf="test->runtime"/>
 		<dependency org="org.eclipse.virgo.medic" name="org.eclipse.virgo.medic.test" rev="${org.eclipse.virgo.medic}" conf="test->runtime"/>
-		<dependency org="org.eclipse.virgo.teststubs" name="org.eclipse.virgo.teststubs.osgi" rev="${org.eclipse.virgo.teststubs}" conf="test->runtime"/>		
+		<dependency org="org.eclipse.virgo.teststubs" name="org.eclipse.virgo.teststubs.osgi" rev="${org.eclipse.virgo.teststubs}" conf="test->runtime"/>	
+		<dependency org="org.springframework" name="org.springframework.test" rev="${org.springframework}" conf="test->runtime"/>
+		<dependency org="org.eclipse.virgo.kernel" name="org.eclipse.virgo.kernel.stubs" rev="${org.eclipse.virgo.kernel}" conf="test->compile"/>
 		
 		<dependency org="org.slf4j" name="com.springsource.slf4j.api" rev="${org.slf4j}" conf="compile->runtime"/>
 		<dependency org="org.slf4j" name="com.springsource.slf4j.nop" rev="${org.slf4j}" conf="test->runtime"/>
 
 		<dependency org="org.eclipse.virgo.kernel" name="org.eclipse.virgo.kernel.core" rev="${org.eclipse.virgo.kernel}" conf="aspects, provided->compile"/>
 		<dependency org="org.eclipse.virgo.kernel" name="org.eclipse.virgo.kernel.deployer" rev="${org.eclipse.virgo.kernel}" conf="provided->compile"/>
-		<dependency org="org.eclipse.virgo.kernel" name="org.eclipse.virgo.kernel.osgi" rev="${org.eclipse.virgo.kernel}" conf="provided->compile"/>		
+		<dependency org="org.eclipse.virgo.kernel" name="org.eclipse.virgo.kernel.osgi" rev="${org.eclipse.virgo.kernel}" conf="provided->compile"/>
+		<dependency org="org.eclipse.virgo.util" name="org.eclipse.virgo.util.math" rev="${org.eclipse.virgo.util}" conf="provided->compile"/>
+		<dependency org="org.eclipse.virgo.util" name="org.eclipse.virgo.util.io" rev="${org.eclipse.virgo.util}" conf="provided->compile"/>
+		<dependency org="org.eclipse.virgo.util" name="org.eclipse.virgo.util.osgi" rev="${org.eclipse.virgo.util}" conf="provided->compile"/>
 		<dependency org="org.eclipse.virgo.medic" name="org.eclipse.virgo.medic" rev="${org.eclipse.virgo.medic}" conf="aspects, compile->runtime"/>
 		<dependency org="org.eclipse.virgo.medic" name="org.eclipse.virgo.medic.core" rev="${org.eclipse.virgo.medic}" conf="runtime->runtime"/>
 		<dependency org="org.eclipse.gemini.web" name="org.eclipse.gemini.web.core" rev="${org.eclipse.gemini.web}" conf="compile->compile"/>
