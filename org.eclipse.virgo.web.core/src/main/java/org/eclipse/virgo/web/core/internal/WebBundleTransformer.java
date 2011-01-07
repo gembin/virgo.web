@@ -11,26 +11,25 @@
 
 package org.eclipse.virgo.web.core.internal;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.Collections;
-import java.util.Locale;
-
-import org.osgi.framework.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.eclipse.gemini.web.core.InstallationOptions;
-import org.eclipse.virgo.kernel.deployer.core.DeploymentException;
-import org.eclipse.virgo.kernel.install.artifact.BundleInstallArtifact;
-import org.eclipse.virgo.kernel.install.artifact.InstallArtifact;
-import org.eclipse.virgo.kernel.install.environment.InstallEnvironment;
-import org.eclipse.virgo.kernel.install.pipeline.stage.transform.Transformer;
-import org.eclipse.virgo.util.common.Tree;
-import org.eclipse.virgo.util.common.Tree.ExceptionThrowingTreeVisitor;
-import org.eclipse.virgo.util.osgi.manifest.BundleManifest;
+//import java.io.IOException;
+//import java.net.MalformedURLException;
+//import java.net.URI;
+//import java.net.URL;
+//import java.util.Collections;
+//import java.util.Locale;
+//
+//import org.osgi.framework.Constants;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//
+//import org.eclipse.virgo.kernel.deployer.core.DeploymentException;
+//import org.eclipse.virgo.kernel.install.artifact.BundleInstallArtifact;
+//import org.eclipse.virgo.kernel.install.artifact.InstallArtifact;
+//import org.eclipse.virgo.kernel.install.environment.InstallEnvironment;
+//import org.eclipse.virgo.kernel.install.pipeline.stage.transform.Transformer;
+//import org.eclipse.virgo.util.common.Tree;
+//import org.eclipse.virgo.util.common.Tree.ExceptionThrowingTreeVisitor;
+//import org.eclipse.virgo.util.osgi.manifest.BundleManifest;
 
 /**
  * This is responsible for making all install artifacts, as determined by the {@code WebArtifactIdentityDeterminer}, in to valid WAB's. 
@@ -40,8 +39,9 @@ import org.eclipse.virgo.util.osgi.manifest.BundleManifest;
  * Thread-safe.
  * 
  */
-final class WebBundleTransformer implements Transformer {
+final class WebBundleTransformer /* implements Transformer*/ {
 
+	/**
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final WebDeploymentEnvironment environment;
@@ -54,9 +54,6 @@ final class WebBundleTransformer implements Transformer {
         this.environment = environment;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void transform(Tree<InstallArtifact> installTree, InstallEnvironment installEnvironment) throws DeploymentException {
         installTree.visit(new ExceptionThrowingTreeVisitor<InstallArtifact, DeploymentException>() {
 
@@ -163,7 +160,7 @@ final class WebBundleTransformer implements Transformer {
         try {
             BundleManifest bundleManifest = bundleArtifact.getBundleManifest();
             if (bundleManifest.getModuleType() == null || "web".equalsIgnoreCase(bundleManifest.getModuleType())) {
-                boolean webBundle = /*WebContainerUtils.*/ isWebApplicationBundle(bundleManifest);
+                boolean webBundle = *WebContainerUtils.* isWebApplicationBundle(bundleManifest);
                 InstallationOptions installationOptions = new InstallationOptions(Collections.<String, String> emptyMap());
                 installationOptions.setDefaultWABHeaders(true);
                 this.environment.getManifestTransformer().transform(bundleManifest, getSourceUrl(bundleArtifact), installationOptions, webBundle);
@@ -190,7 +187,7 @@ final class WebBundleTransformer implements Transformer {
     }
     
     // Following methods temporarily copied from WebContainerUtils
-    /**
+    **
      * Determines whether the given manifest represents a web application bundle. According to the R4.2 Enterprise
      * Specification, this is true if and only if the manifest contains any of the headers in Table 128.3:
      * Bundle-SymbolicName, Bundle-Version, Bundle-ManifestVersion, Import-Package, Web-ContextPath. Note: there is no
@@ -198,7 +195,7 @@ final class WebBundleTransformer implements Transformer {
      * 
      * @param manifest the bundle manifest
      * @return <code>true</code> if and only if the given manifest represents a web application bundle
-     */
+     *
     public static boolean isWebApplicationBundle(BundleManifest manifest) {
         return specifiesBundleSymbolicName(manifest) || specifiesBundleVersion(manifest) || specifiesBundleManifestVersion(manifest)
             || specifiesImportPackage(manifest) || specifiesWebContextPath(manifest);
@@ -223,4 +220,5 @@ final class WebBundleTransformer implements Transformer {
     private static boolean specifiesWebContextPath(BundleManifest manifest) {
         return manifest.getHeader("Web-ContextPath") != null;
     }
+    */
 }

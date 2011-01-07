@@ -9,7 +9,7 @@
  *   VMware Inc. - initial contribution
  *******************************************************************************/
 
-package org.eclipse.virgo.web.core.internal;
+package org.eclipse.virgo.web.tomcat;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;

@@ -12,7 +12,7 @@
 package org.eclipse.virgo.web.tomcat;
 
 import org.eclipse.virgo.kernel.shim.serviceability.TracingService;
-import org.eclipse.virgo.web.core.WebApplicationRegistry;
+import org.eclipse.virgo.web.tomcat.internal.StandardWebApplicationRegistry;
 
 class ApplicationNameTrackingDelegate {
 
@@ -24,7 +24,7 @@ class ApplicationNameTrackingDelegate {
 
     private TracingService tracingService;
 
-    private WebApplicationRegistry registry;
+    private StandardWebApplicationRegistry registry;
 
     public static ApplicationNameTrackingDelegate getInstance() {
         return INSTANCE;
@@ -39,7 +39,7 @@ class ApplicationNameTrackingDelegate {
         }
     }
 
-    public void setRegistry(WebApplicationRegistry registry) {
+    public void setRegistry(StandardWebApplicationRegistry registry) {
         synchronized (this.monitor) {
             this.registry = registry;
         }
@@ -50,7 +50,7 @@ class ApplicationNameTrackingDelegate {
             contextPath = ROOT_CONTEXT_PATH;
         }
         TracingService service = null;
-        WebApplicationRegistry registry = null;
+        StandardWebApplicationRegistry registry = null;
         synchronized (this.monitor) {
             service = this.tracingService;
             registry = this.registry;

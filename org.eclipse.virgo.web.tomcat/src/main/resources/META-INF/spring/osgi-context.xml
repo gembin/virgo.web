@@ -7,11 +7,13 @@
 
 	<reference id="tracingService" interface="org.eclipse.virgo.kernel.shim.serviceability.TracingService" />
 	
-	<reference id="registry" interface="org.eclipse.virgo.web.core.WebApplicationRegistry"/>
-	
 	<reference id="framework" interface="org.eclipse.virgo.kernel.osgi.framework.OsgiFramework"/>
 	
 	<service ref="customizer" interface="org.eclipse.gemini.web.tomcat.spi.ClassLoaderCustomizer"/>
+	
+	<service ref="registry" interface="org.eclipse.virgo.web.tomcat.WebApplicationRegistry"/>
+	
+	<beans:bean id="registry" class="org.eclipse.virgo.web.tomcat.internal.StandardWebApplicationRegistry"/>
 	
 	<beans:bean class="org.eclipse.virgo.web.tomcat.ApplicationNameTrackingDelegate" factory-method="getInstance">
 		<beans:property name="tracingService" ref="tracingService"/>

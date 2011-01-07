@@ -9,23 +9,12 @@
  *   VMware Inc. - initial contribution
  *******************************************************************************/
 
-package org.eclipse.virgo.web.core;
+package org.eclipse.virgo.web.tomcat;
 
-
+/**
+ * 
+ */
 public interface WebApplicationRegistry {
-
-    /**
-     * Registers the web application with the supplied <code>contextPath</code> and <code>applicationName</code>.
-     * @param contextPath to register web application with
-     * @param applicationName of web application
-     */
-    void registerWebApplication(String contextPath, String applicationName);
-
-    /**
-     * Unregisters the web application with the supplied <code>contextPath</code>.
-     * @param contextPath of web application to unregister
-     */
-    void unregisterWebApplication(String contextPath);
 
     /**
      * Gets the name of the web application with the supplied <code>contextPath</code>.

@@ -16,15 +16,58 @@ import java.util.Map;
 
 import org.osgi.framework.Version;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
 import org.eclipse.virgo.medic.eventlog.EventLogger;
-import org.eclipse.gemini.web.core.WebContainer;
-import org.eclipse.gemini.web.core.spi.ContextPathExistsException;
 
 final class WebApplicationEventLogger implements EventHandler {
             
+    static final String EVENT_NAME_PREFIX = "org/osgi/service/web/";
+
+    /**
+     * The {@link EventAdmin} topic for web bundle <code>DEPLOYING</code> events.
+     */
+    static final String EVENT_DEPLOYING = EVENT_NAME_PREFIX + "DEPLOYING";
+
+    /**
+     * The {@link EventAdmin} topic for web bundle <code>DEPLOYED</code> events.
+     */
+    static final String EVENT_DEPLOYED = EVENT_NAME_PREFIX + "DEPLOYED";
+
+    /**
+     * The {@link EventAdmin} topic for web bundle <code>UNDEPLOYING</code> events.
+     */
+    static final String EVENT_UNDEPLOYING = EVENT_NAME_PREFIX + "UNDEPLOYING";
+
+    /**
+     * The {@link EventAdmin} topic for web bundle <code>UNDEPLOYED</code> events.
+     */
+    static final String EVENT_UNDEPLOYED = EVENT_NAME_PREFIX + "UNDEPLOYED";
+
+    /**
+     * The {@link EventAdmin} topic for web bundle <code>FAILED</code> events.
+     */
+    static final String EVENT_FAILED = EVENT_NAME_PREFIX + "FAILED";
+
+    /**
+     * The {@link org.osgi.service.event.Event Event} property for the web application bundle's context path.
+     */
+    static final String EVENT_PROPERTY_CONTEXT_PATH = "context.path";
+
+    /**
+     * The {@link org.osgi.service.event.Event Event} property for the web application bundle's version.
+     */
+    static final String EVENT_PROPERTY_BUNDLE_VERSION = "bundle.version";
+	
+    
+    
+    
+    
+    
+	
+	
     private static final String EMPTY_CONTEXT_PATH = "";
 
     private static final String ROOT_CONTEXT_PATH = "/";
@@ -35,10 +78,10 @@ final class WebApplicationEventLogger implements EventHandler {
 
     static {
         Map<String, WebLogEvents> mappings = new HashMap<String, WebLogEvents>();
-        mappings.put(WebContainer.EVENT_DEPLOYING, WebLogEvents.STARTING_WEB_BUNDLE);
-        mappings.put(WebContainer.EVENT_DEPLOYED, WebLogEvents.STARTED_WEB_BUNDLE);
-        mappings.put(WebContainer.EVENT_UNDEPLOYING, WebLogEvents.STOPPING_WEB_BUNDLE);
-        mappings.put(WebContainer.EVENT_UNDEPLOYED, WebLogEvents.STOPPED_WEB_BUNDLE);
+        mappings.put(EVENT_DEPLOYING, WebLogEvents.STARTING_WEB_BUNDLE);
+        mappings.put(EVENT_DEPLOYED, WebLogEvents.STARTED_WEB_BUNDLE);
+        mappings.put(EVENT_UNDEPLOYING, WebLogEvents.STOPPING_WEB_BUNDLE);
+        mappings.put(EVENT_UNDEPLOYED, WebLogEvents.STOPPED_WEB_BUNDLE);
         MAPPINGS = mappings;
     }
 
@@ -48,7 +91,7 @@ final class WebApplicationEventLogger implements EventHandler {
 
     public void handleEvent(Event event) {
         String topic = event.getTopic();
-        if (WebContainer.EVENT_FAILED.equals(topic)) {
+        if (EVENT_FAILED.equals(topic)) {
             logFailure(event);
         } else {
             WebLogEvents logEvent = MAPPINGS.get(topic);
@@ -60,7 +103,7 @@ final class WebApplicationEventLogger implements EventHandler {
 
     private void logFailure(Event event) {
         Exception ex = (Exception) event.getProperty(EventConstants.EXCEPTION);
-        if (ex instanceof ContextPathExistsException) {
+        if (ex.getClass().getName().contains("ContextPathExistsException")) {
             this.eventLogger.log(WebLogEvents.WEB_BUNDLE_FAILED_CONTEXT_PATH_USED, bundleName(event), bundleVersion(event), contextPathFor(event));
         } else {
             this.eventLogger.log(WebLogEvents.WEB_BUNDLE_FAILED, bundleName(event), bundleVersion(event));
@@ -68,7 +111,7 @@ final class WebApplicationEventLogger implements EventHandler {
     }
 
     private String contextPathFor(Event event) {
-        String contextPath = (String) event.getProperty(WebContainer.EVENT_PROPERTY_CONTEXT_PATH);
+        String contextPath = (String) event.getProperty(EVENT_PROPERTY_CONTEXT_PATH);
         if(EMPTY_CONTEXT_PATH.equals(contextPath)) {
             return ROOT_CONTEXT_PATH;
         }
@@ -80,6 +123,6 @@ final class WebApplicationEventLogger implements EventHandler {
     }
     
     private Version bundleVersion(Event event) {
-        return (Version) event.getProperty(WebContainer.EVENT_PROPERTY_BUNDLE_VERSION);
+        return (Version) event.getProperty(EVENT_PROPERTY_BUNDLE_VERSION);
     }
 }
