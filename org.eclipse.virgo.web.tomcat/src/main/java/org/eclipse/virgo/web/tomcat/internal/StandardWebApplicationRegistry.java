@@ -19,6 +19,7 @@ import org.eclipse.virgo.kernel.deployer.core.DeploymentException;
 import org.eclipse.virgo.kernel.install.artifact.InstallArtifact;
 import org.eclipse.virgo.kernel.install.artifact.InstallArtifactLifecycleListenerSupport;
 import org.eclipse.virgo.web.tomcat.WebApplicationRegistry;
+import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,21 @@ final public class StandardWebApplicationRegistry extends InstallArtifactLifecyc
     public String getWebApplicationName(String contextPath) {
         return this.deployedWebAppNames.get(contextPath);
     }
-
+    
+    /** 
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStarting(InstallArtifact installArtifact) throws DeploymentException {
+        if (isWebBundle(installArtifact)) {
+            try {
+                this.webApplications.put(installArtifact, getWebContainer().createWebApplication(((BundleInstallArtifact)installArtifact).getBundle()));
+            } catch (BundleException be) {
+                throw new DeploymentException("Failed to create new web application for web bundle '" + installArtifact + "'.", be);
+            }
+        }
+    }
+    
     /** 
      * {@inheritDoc}
      */
