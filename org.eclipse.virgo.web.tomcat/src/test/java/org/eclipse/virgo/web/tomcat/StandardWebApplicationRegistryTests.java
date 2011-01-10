@@ -14,7 +14,6 @@ package org.eclipse.virgo.web.tomcat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URI;
@@ -33,7 +32,7 @@ public class StandardWebApplicationRegistryTests {
     
     private StubWebContainer webContainer = new StubWebContainer();
     
-    private StandardWebApplicationRegistry webAppRegistry = new StandardWebApplicationRegistry();
+    private StandardWebApplicationRegistry webAppRegistry = new StandardWebApplicationRegistry(webContainer);
     
     @Test
     public void standardLifecycleForNonBundleInstallArtifact() throws DeploymentException {
@@ -51,6 +50,7 @@ public class StandardWebApplicationRegistryTests {
         BundleManifest bundleManifest = new StandardBundleManifest(null);
         bundleManifest.setBundleVersion(new Version(1, 0, 0));
         bundleManifest.getBundleSymbolicName().setSymbolicName("foobar");
+        bundleManifest.setHeader("Web-ContextPath", "");
         
         BundleInstallArtifact installArtifact = TestUtils.createBundleInstallArtifact(URI.create("file:/testLocation"), new File("location"), bundleManifest);        
         
@@ -61,10 +61,7 @@ public class StandardWebApplicationRegistryTests {
         
         this.webAppRegistry.onStarted(installArtifact);
         
-        String name = this.webAppRegistry.getWebApplicationName("/");
-        assertEquals("Found " + name + " instead of foobar-1.0.0", "foobar-1.0.0", name);
-        assertTrue(webApplication.isStarted());
-        assertEquals("/", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));             
+        assertEquals("foobar-1.0.0", this.webAppRegistry.getWebApplicationName("/"));           
         
         this.webAppRegistry.onStopping(installArtifact);
         
@@ -88,6 +85,7 @@ public class StandardWebApplicationRegistryTests {
         BundleManifest bundleManifest = new StandardBundleManifest(null);
         bundleManifest.setBundleVersion(new Version(1, 0, 0));
         bundleManifest.getBundleSymbolicName().setSymbolicName("foo");
+        bundleManifest.setHeader("Web-ContextPath", "/bar");
         
         BundleInstallArtifact installArtifact = TestUtils.createBundleInstallArtifact(URI.create("file:/bar"), new File("location"), bundleManifest);
         
@@ -99,7 +97,6 @@ public class StandardWebApplicationRegistryTests {
         this.webAppRegistry.onStarted(installArtifact);
         
         assertEquals("foo-1.0.0", this.webAppRegistry.getWebApplicationName("/bar"));
-        assertTrue(webApplication.isStarted());
         assertEquals("/bar", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));           
         
         this.webAppRegistry.onStopping(installArtifact);
