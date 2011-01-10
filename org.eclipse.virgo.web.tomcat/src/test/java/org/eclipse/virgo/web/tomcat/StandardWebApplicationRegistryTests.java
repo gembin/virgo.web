@@ -33,15 +33,15 @@ public class StandardWebApplicationRegistryTests {
     
     private StubWebContainer webContainer = new StubWebContainer();
     
-    private StandardWebApplicationRegistry listener = new StandardWebApplicationRegistry();
+    private StandardWebApplicationRegistry webAppRegistry = new StandardWebApplicationRegistry();
     
     @Test
     public void standardLifecycleForNonBundleInstallArtifact() throws DeploymentException {
         InstallArtifact installArtifact = TestUtils.createInstallArtifact("foo", new Version(1,0,0), new File("location"), URI.create("file:/bar"));
         
-        this.listener.onStarting(installArtifact);
-        this.listener.onStarted(installArtifact);
-        this.listener.onStopping(installArtifact);
+        this.webAppRegistry.onStarting(installArtifact);
+        this.webAppRegistry.onStarted(installArtifact);
+        this.webAppRegistry.onStopping(installArtifact);
         
         //this.listener.assertStateUnchanged();
     }
@@ -57,17 +57,18 @@ public class StandardWebApplicationRegistryTests {
         StubWebApplication webApplication = new StubWebApplication("");
         this.webContainer.addWebApplication(installArtifact.getBundle(), webApplication);
         
-        this.listener.onStarting(installArtifact);
+        this.webAppRegistry.onStarting(installArtifact);
         
-        this.listener.onStarted(installArtifact);
+        this.webAppRegistry.onStarted(installArtifact);
         
-        assertEquals("foobar-1.0.0", this.listener.getWebApplicationName("/"));
+        String name = this.webAppRegistry.getWebApplicationName("/");
+        assertEquals("Found " + name + " instead of foobar-1.0.0", "foobar-1.0.0", name);
         assertTrue(webApplication.isStarted());
         assertEquals("/", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));             
         
-        this.listener.onStopping(installArtifact);
+        this.webAppRegistry.onStopping(installArtifact);
         
-        assertNull(this.listener.getWebApplicationName("/"));
+        assertNull(this.webAppRegistry.getWebApplicationName("/"));
         assertFalse(webApplication.isStarted());
     }
     
@@ -75,9 +76,9 @@ public class StandardWebApplicationRegistryTests {
     public void standardLifecycleForNonWebBundleBundleInstallArtifact() throws DeploymentException {
         InstallArtifact installArtifact = TestUtils.createBundleInstallArtifact(URI.create("file:/bar"), new File("location"), new StandardBundleManifest(null));
         
-        this.listener.onStarting(installArtifact);
-        this.listener.onStarted(installArtifact);
-        this.listener.onStopping(installArtifact);
+        this.webAppRegistry.onStarting(installArtifact);
+        this.webAppRegistry.onStarted(installArtifact);
+        this.webAppRegistry.onStopping(installArtifact);
         
         //this.listener.assertStateUnchanged();
     }
@@ -93,17 +94,17 @@ public class StandardWebApplicationRegistryTests {
         StubWebApplication webApplication = new StubWebApplication("/bar");
         this.webContainer.addWebApplication(installArtifact.getBundle(), webApplication);
         
-        this.listener.onStarting(installArtifact);
+        this.webAppRegistry.onStarting(installArtifact);
         
-        this.listener.onStarted(installArtifact);
+        this.webAppRegistry.onStarted(installArtifact);
         
-        assertEquals("foo-1.0.0", this.listener.getWebApplicationName("/bar"));
+        assertEquals("foo-1.0.0", this.webAppRegistry.getWebApplicationName("/bar"));
         assertTrue(webApplication.isStarted());
         assertEquals("/bar", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));           
         
-        this.listener.onStopping(installArtifact);
+        this.webAppRegistry.onStopping(installArtifact);
         
-        assertNull(this.listener.getWebApplicationName("/bar"));
+        assertNull(this.webAppRegistry.getWebApplicationName("/bar"));
         assertFalse(webApplication.isStarted());              
     }
     
