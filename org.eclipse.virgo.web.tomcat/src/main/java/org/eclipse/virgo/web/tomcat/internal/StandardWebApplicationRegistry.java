@@ -12,6 +12,8 @@
 package org.eclipse.virgo.web.tomcat.internal;
 
 import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,9 +23,16 @@ import org.eclipse.virgo.kernel.deployer.core.DeploymentException;
 import org.eclipse.virgo.kernel.install.artifact.BundleInstallArtifact;
 import org.eclipse.virgo.kernel.install.artifact.InstallArtifact;
 import org.eclipse.virgo.kernel.install.artifact.InstallArtifactLifecycleListenerSupport;
+import org.eclipse.virgo.osgi.extensions.equinox.hooks.PluggableDelegatingClassLoaderDelegateHook;
 import org.eclipse.virgo.util.osgi.manifest.BundleManifest;
 import org.eclipse.virgo.web.tomcat.WebApplicationRegistry;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventConstants;
+import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +46,8 @@ final public class StandardWebApplicationRegistry extends InstallArtifactLifecyc
     private static final String ROOT_CONTEXT_PATH = "/";
     
     private static final String MANIFEST_HEADER_WEB_CONTEXT_PATH = "Web-ContextPath";
+    
+    private final WebAppClassLoaderDelegateHook classLoaderDelegateHook = new WebAppClassLoaderDelegateHook();
 
     private final WebContainer webContainer;
     
@@ -44,10 +55,35 @@ final public class StandardWebApplicationRegistry extends InstallArtifactLifecyc
 
     private final Map<InstallArtifact, WebApplication> webApplications = new ConcurrentHashMap<InstallArtifact, WebApplication>();
     
-    public StandardWebApplicationRegistry(WebContainer webContainer){
+    private final Map<Bundle, BundleInstallArtifact> webBundleInstallArtifacts = new ConcurrentHashMap<Bundle, BundleInstallArtifact>();
+
+    private final EventHandler webBundleDeployedEventHandler = new WebBundleDeployedEventHandler();
+    
+    private volatile ServiceRegistration<EventHandler> eventHandlerRegistration;
+    
+    private final BundleContext bundleContext;
+    
+    public StandardWebApplicationRegistry(WebContainer webContainer, BundleContext bundleContext){
     	this.webContainer = webContainer;
+        this.bundleContext = bundleContext;
     }
     
+    public void init() {
+        PluggableDelegatingClassLoaderDelegateHook.getInstance().addDelegate(this.classLoaderDelegateHook);
+        Dictionary<String, String> properties = new Hashtable<String, String>();
+        properties.put(EventConstants.EVENT_TOPIC, WebContainer.EVENT_DEPLOYED);
+        this.eventHandlerRegistration = this.bundleContext.registerService(EventHandler.class, this.webBundleDeployedEventHandler, properties);
+    }
+    
+    public void destroy() {
+        PluggableDelegatingClassLoaderDelegateHook.getInstance().removeDelegate(this.classLoaderDelegateHook);
+        ServiceRegistration<EventHandler> localRegistration = this.eventHandlerRegistration;
+        if (localRegistration != null) {
+            this.eventHandlerRegistration = null;
+            localRegistration.unregister();
+        }
+    }
+
     /**
      *
      */
@@ -77,8 +113,12 @@ final public class StandardWebApplicationRegistry extends InstallArtifactLifecyc
     public void onStarted(InstallArtifact installArtifact) throws DeploymentException {
         WebApplication webApplication = this.webApplications.get(installArtifact);
         if (webApplication != null) {
+        	Bundle bundle = ((BundleInstallArtifact)installArtifact).getBundle();
+            this.classLoaderDelegateHook.addWebApplication(webApplication, bundle);
+            
         	String contextPath = this.getContextPath(webApplication);
         	String applicationName = getApplicationName(installArtifact);
+            installArtifact.setProperty("org.eclipse.virgo.web.contextPath", contextPath);
             logger.debug("Registering web application with context path [{}] and application name [{}].", contextPath, applicationName);
         	this.deployedWebAppNames.put(contextPath, applicationName);
         }
@@ -94,6 +134,17 @@ final public class StandardWebApplicationRegistry extends InstallArtifactLifecyc
         	String contextPath = this.getContextPath(webApplication);
         	logger.debug("Unregistering web application with context path [{}].", contextPath);
         	this.deployedWebAppNames.remove(contextPath);
+        }
+    }
+    
+    protected void webBundleDeployed(Bundle webBundle) {
+        BundleInstallArtifact installArtifact = this.webBundleInstallArtifacts.get(webBundle);
+        
+        if (installArtifact != null) {
+            WebApplication webApplication = this.webApplications.get(installArtifact);
+            if (webApplication != null) {                   
+                
+            }
         }
     }
     
@@ -119,6 +170,18 @@ final public class StandardWebApplicationRegistry extends InstallArtifactLifecyc
             return ROOT_CONTEXT_PATH;
         }
         return contextPath;
+    }
+    
+    /**
+     *
+     */
+    private final class WebBundleDeployedEventHandler implements EventHandler {
+
+        public void handleEvent(Event event) {
+            if (WebContainer.EVENT_DEPLOYED.equals(event.getTopic())) {
+                webBundleDeployed((Bundle)event.getProperty(EventConstants.BUNDLE));
+            }
+        }        
     }
     
 }

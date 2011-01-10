@@ -13,10 +13,13 @@
 	
 	<service ref="customizer" interface="org.eclipse.gemini.web.tomcat.spi.ClassLoaderCustomizer"/>
 	
-	<service ref="registry" interface="org.eclipse.virgo.web.tomcat.WebApplicationRegistry"/>
+	<service ref="registry" interface="org.eclipse.virgo.web.tomcat.WebApplicationRegistry"/><!--
 	
-	<beans:bean id="registry" class="org.eclipse.virgo.web.tomcat.internal.StandardWebApplicationRegistry">
+	init-method="init" destroy-method="destroy"
+	
+	--><beans:bean id="registry" class="org.eclipse.virgo.web.tomcat.internal.StandardWebApplicationRegistry">
 		<beans:constructor-arg ref="webContainer"/>
+		<beans:constructor-arg ref="bundleContext"/>
 	</beans:bean>
 	
 	<beans:bean class="org.eclipse.virgo.web.tomcat.ApplicationNameTrackingDelegate" factory-method="getInstance">

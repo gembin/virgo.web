@@ -9,7 +9,7 @@
  *   VMware Inc. - initial contribution
  *******************************************************************************/
 
-package org.eclipse.virgo.web.tomcat;
+package org.eclipse.virgo.web.tomcat.internal;
 
 import java.io.FileNotFoundException;
 import java.net.URL;

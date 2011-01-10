@@ -19,11 +19,13 @@ import java.io.File;
 import java.net.URI;
 
 import org.junit.Test;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Version;
 
 import org.eclipse.virgo.kernel.deployer.core.DeploymentException;
 import org.eclipse.virgo.kernel.install.artifact.BundleInstallArtifact;
 import org.eclipse.virgo.kernel.install.artifact.InstallArtifact;
+import org.eclipse.virgo.teststubs.osgi.framework.StubBundleContext;
 import org.eclipse.virgo.util.osgi.manifest.BundleManifest;
 import org.eclipse.virgo.util.osgi.manifest.internal.StandardBundleManifest;
 import org.eclipse.virgo.web.tomcat.internal.StandardWebApplicationRegistry;
@@ -31,8 +33,10 @@ import org.eclipse.virgo.web.tomcat.internal.StandardWebApplicationRegistry;
 public class StandardWebApplicationRegistryTests {
     
     private StubWebContainer webContainer = new StubWebContainer();
+
+	private BundleContext stubBundleContext = new StubBundleContext();
     
-    private StandardWebApplicationRegistry webAppRegistry = new StandardWebApplicationRegistry(webContainer);
+    private StandardWebApplicationRegistry webAppRegistry = new StandardWebApplicationRegistry(webContainer, stubBundleContext);
     
     @Test
     public void standardLifecycleForNonBundleInstallArtifact() throws DeploymentException {
@@ -61,7 +65,9 @@ public class StandardWebApplicationRegistryTests {
         
         this.webAppRegistry.onStarted(installArtifact);
         
-        assertEquals("foobar-1.0.0", this.webAppRegistry.getWebApplicationName("/"));           
+        assertEquals("foobar-1.0.0", this.webAppRegistry.getWebApplicationName("/"));    
+
+        assertEquals("/", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));  
         
         this.webAppRegistry.onStopping(installArtifact);
         
