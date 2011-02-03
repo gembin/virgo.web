@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Virgo Web Test Bundle
 Bundle-SymbolicName: org.eclipse.virgo.web.test
-Bundle-Version: 2.0.0
+Bundle-Version: 3.0.0
 Import-Template: 
  org.eclipse.virgo.kernel.*;version="${org.eclipse.virgo.kernel:[=.=.=, +1)}",
  org.eclipse.virgo.util.*;version="${org.eclipse.virgo.util:[=.=.=, +1)}",
@@ -14,6 +14,15 @@ Import-Template:
  org.aspectj.*;version="${org.aspectj:[=.=.=, +1)}",
  org.osgi.framework.*;version="0",
  org.springframework.*;version="${org.springframework:[2.5.6, +1)}",
+ org.osgi.service.cm.*;version="0",
+ org.osgi.service.component.*;version="0",
+ org.osgi.service.log.*;version="0",
+ org.eclipse.osgi.framework.log.*;version="0",
+ org.eclipse.osgi.framework.console.*;version="0",
+ org.eclipse.osgi.service.debug.*;version="0",
+ org.eclipse.osgi.service.environment.*;version="0",
+ org.eclipse.osgi.util.*;version="0",
+ org.osgi.util.tracker.*;version="0",
  org.springframework.osgi.*;version="${org.springframework.osgi:[=.=.=, +1)}"
 Excluded-Imports: 
  org.eclipse.virgo,
