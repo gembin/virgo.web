@@ -90,7 +90,7 @@ public class WebBundleLifecycleListenerTests {
         this.listener.webBundleDeployed(installArtifact.getBundle());
         
         assertEquals("foobar-1.0.0", this.webApplicationRegistry.getWebApplicationName("/"));
-        assertTrue(webApplication.isStarted());
+        assertTrue(this.listener.isDeployed(installArtifact.getBundle()));
         assertEquals("/", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));
         
         verify(this.manifestTransformer);        
@@ -144,7 +144,7 @@ public class WebBundleLifecycleListenerTests {
         this.listener.webBundleDeployed(installArtifact.getBundle());
         
         assertEquals("foo-1.0.0", this.webApplicationRegistry.getWebApplicationName("/bar"));
-        assertTrue(webApplication.isStarted());
+        assertTrue(this.listener.isDeployed(installArtifact.getBundle()));
         assertEquals("/bar", installArtifact.getProperty("org.eclipse.virgo.web.contextPath"));
         
         verify(this.manifestTransformer);        

@@ -21,8 +21,6 @@ import org.eclipse.osgi.framework.adaptor.BundleData;
 import org.eclipse.osgi.framework.adaptor.ClassLoaderDelegateHook;
 import org.osgi.framework.Bundle;
 
-import org.eclipse.gemini.web.core.WebApplication;
-
 
 /**
  * A {@link ClassLoaderDelegateHook} that delegates requests to a web application's
@@ -42,8 +40,8 @@ final class WebAppClassLoaderDelegateHook implements ClassLoaderDelegateHook {
     
     private final ThreadLocal<Object> delegationInProgress = new ThreadLocal<Object>();
     
-    void addWebApplication(WebApplication webApplication, Bundle bundle) {
-        this.webAppClassLoaders.put(bundle, webApplication.getClassLoader());
+    void addWebApplication(Bundle bundle, ClassLoader classLoader) {
+        this.webAppClassLoaders.put(bundle, classLoader);
     }
     
     void removeWebApplication(Bundle bundle) {

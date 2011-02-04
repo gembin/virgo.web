@@ -119,9 +119,9 @@ final class WebBundleLifecycleListener extends InstallArtifactLifecycleListenerS
             Bundle bundle = bundleInstallArtifact.getBundle();
             this.webBundleInstallArtifacts.put(bundle, bundleInstallArtifact);
             try {
-                webApplication.start();
+                //webApplication.start();
                 
-                this.classLoaderDelegateHook.addWebApplication(webApplication, bundle);
+                this.classLoaderDelegateHook.addWebApplication(bundle, the classloader of the web application from tomcat. Should be a BundleWebappClassLoader instance);
                 String contextPath = getContextPath(webApplication);
                 getApplicationRegistry().registerWebApplication(contextPath, getApplicationName(installArtifact));
                 installArtifact.setProperty("org.eclipse.virgo.web.contextPath", contextPath);
@@ -131,6 +131,10 @@ final class WebBundleLifecycleListener extends InstallArtifactLifecycleListenerS
                 throw new DeploymentException("Web application failed to start", wasfe);
             }
         }
+    }
+    
+    public boolean isDeployed(Bundle webBundle){
+        return this.webBundleInstallArtifacts.containsKey(webBundle);
     }
     
     protected void webBundleDeployed(Bundle webBundle) {
